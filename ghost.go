@@ -52,7 +52,7 @@ func (c *Client) Request(method, path string, data interface{}) (map[string][]in
 	}
 	// Check for application errors
 	if em, ok := res["errors"]; ok {
-		e := Errors{}
+		e := Error{}
 		err = mapstructure.Decode(em[0], &e)
 		if err != nil {
 			return nil, err
