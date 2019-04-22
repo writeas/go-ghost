@@ -1,12 +1,26 @@
 package admin
 
 import (
+	"encoding/json"
 	"github.com/writeas/go-ghost"
 	"net/http"
 )
 
-func AddPost(gc *ghost.Client, p *ghost.PostParams) error {
+func AddPost(gc *ghost.Client, p ghost.PostParams) error {
 	c := getC(gc)
-	_, err := c.Request(http.MethodPost, c.endpoint("posts"), p)
+
+	// Convert params to mobiledoc
+	if *p.Markdown != "" {
+		mobdoc, err := json.Marshal(ghost.NewMarkdownMobiledoc(*p.Markdown))
+		if err == nil {
+			p.Mobiledoc = ghost.String(string(mobdoc))
+			p.Markdown = nil
+		}
+	}
+	// TODO: also handle HTML
+
+	_, err := c.Request(http.MethodPost, c.endpoint("posts"), map[string]interface{}{
+		"posts": []ghost.PostParams{p},
+	})
 	return err
 }
