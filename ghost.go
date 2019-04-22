@@ -1,12 +1,16 @@
+// Package ghost provides the binding for Ghost APIs
 package ghost
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/mitchellh/mapstructure"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -96,6 +100,13 @@ func (c *Client) prepareRequest(r *http.Request) {
 	}
 	r.Header.Add("User-Agent", ua)
 	r.Header.Add("Content-Type", "application/json")
+	if c.Key != "" {
+		token, err := c.generateJWT()
+		if err == nil {
+			// TODO: return error
+			r.Header.Add("Authorization", "Ghost "+token)
+		}
+	}
 }
 
 func (c *Client) endpointForID(api, resource, id string) string {
@@ -104,6 +115,34 @@ func (c *Client) endpointForID(api, resource, id string) string {
 
 func (c *Client) endpointForSlug(api, resource, slug string) string {
 	return fmt.Sprintf("/%s/api/%s/%s/%s/slug/%s/", c.GhostPath, c.Version, api, resource, slug)
+}
+
+func (c *Client) generateJWT() (string, error) {
+	keyParts := strings.Split(c.Key, ":")
+	if len(keyParts) != 2 {
+		return "", fmt.Errorf("Invalid Client.Key format")
+	}
+	id := keyParts[0]
+	rawSecret := []byte(keyParts[1])
+	secret := make([]byte, hex.DecodedLen(len(rawSecret)))
+	_, err := hex.Decode(secret, rawSecret)
+	if err != nil {
+		return "", err
+	}
+
+	now := time.Now()
+	hs256 := jwt.NewHMAC(jwt.SHA256, secret)
+	h := jwt.Header{KeyID: id}
+	p := jwt.Payload{
+		Audience:       jwt.Audience{"/" + c.Version + "/admin/"},
+		ExpirationTime: now.Add(5 * time.Minute).Unix(),
+		IssuedAt:       now.Unix(),
+	}
+	token, err := jwt.Sign(h, p, hs256)
+	if err != nil {
+		return "", err
+	}
+	return string(token), nil
 }
 
 // String returns a pointer to the string value passed in.
