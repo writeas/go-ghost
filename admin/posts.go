@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"github.com/writeas/go-ghost"
+	"github.com/writeas/go-mobiledoc"
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ func AddPost(gc *ghost.Client, p ghost.PostParams) error {
 
 	// Convert params to mobiledoc
 	if *p.Markdown != "" {
-		mobdoc, err := json.Marshal(ghost.NewMarkdownMobiledoc(*p.Markdown))
+		mobdoc, err := json.Marshal(mobiledoc.FromMarkdown(*p.Markdown))
 		if err == nil {
 			p.Mobiledoc = ghost.String(string(mobdoc))
 			p.Markdown = nil
