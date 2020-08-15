@@ -72,7 +72,7 @@ func (c *Client) buildRequest(method, path string, data io.Reader) (*http.Reques
 	if err != nil {
 		return nil, fmt.Errorf("buildRequest: %v", err)
 	}
-	c.prepareRequest(r)
+	err = c.prepareRequest(r)
 
 	return r, nil
 }
@@ -93,7 +93,7 @@ func (c *Client) doRequest(r *http.Request) (map[string][]interface{}, error) {
 	return env, nil
 }
 
-func (c *Client) prepareRequest(r *http.Request) {
+func (c *Client) prepareRequest(r *http.Request) error {
 	ua := c.UserAgent
 	if ua == "" {
 		ua = "go-ghost v1"
@@ -102,11 +102,13 @@ func (c *Client) prepareRequest(r *http.Request) {
 	r.Header.Add("Content-Type", "application/json")
 	if c.Key != "" {
 		token, err := c.generateJWT()
-		if err == nil {
-			// TODO: return error
-			r.Header.Add("Authorization", "Ghost "+token)
+		if err != nil {
+			return err
 		}
+		r.Header.Add("Authorization", "Ghost "+token)
 	}
+
+	return nil
 }
 
 func (c *Client) endpointForID(api, resource, id string) string {
@@ -131,14 +133,13 @@ func (c *Client) generateJWT() (string, error) {
 	}
 
 	now := time.Now()
-	hs256 := jwt.NewHMAC(jwt.SHA256, secret)
-	h := jwt.Header{KeyID: id}
+	hs256 := jwt.NewHS256(secret)
 	p := jwt.Payload{
 		Audience:       jwt.Audience{"/" + c.Version + "/admin/"},
-		ExpirationTime: now.Add(5 * time.Minute).Unix(),
-		IssuedAt:       now.Unix(),
+		ExpirationTime: jwt.NumericDate(now.Add(5 * time.Minute)),
+		IssuedAt:       jwt.NumericDate(now),
 	}
-	token, err := jwt.Sign(h, p, hs256)
+	token, err := jwt.Sign(p, hs256, jwt.KeyID(id))
 	if err != nil {
 		return "", err
 	}
