@@ -1,10 +1,10 @@
 # go-ghost
 
-[![GoDoc](https://godoc.org/github.com/writeas/go-ghost?status.svg)](https://godoc.org/github.com/writeas/go-ghost)
+[![Go Reference](https://pkg.go.dev/badge/github.com/writeas/go-ghost.svg)](https://pkg.go.dev/github.com/writeas/go-ghost)
 
 go-ghost is a Go (golang) library for accessing the Ghost API.
 
-This is currently a work-in-progress, built specifically to support a [Write.as](https://write.as) / [WriteFreely](https://writefreely.org) integration. But contributions (including those to support the full Ghost API) are welcome!
+This library is **incomplete**, and tailored toward our [Write.as](https://write.as) / [WriteFreely](https://writefreely.org) integration. But contributions (including those to support the full Ghost API) are welcome!
 
 ## Install
 
