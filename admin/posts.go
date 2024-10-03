@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// AddPost creates a post from Markdown in the given ghost.PostParams.
 func AddPost(gc *ghost.Client, p ghost.PostParams) error {
 	c := getC(gc)
 

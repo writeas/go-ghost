@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Tag represents a tag on Ghost.
 type Tag struct {
 	ID              *string   `json:"id"`
 	Name            *string   `json:"name"`

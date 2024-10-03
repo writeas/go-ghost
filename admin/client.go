@@ -6,6 +6,7 @@ import (
 	"github.com/writeas/go-ghost"
 )
 
+// Client wraps a ghost.Client.
 type Client struct {
 	ghost.Client
 }

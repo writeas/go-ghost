@@ -14,6 +14,7 @@ import (
 	"time"
 )
 
+// Client stores the necessary values for interacting with the Ghost API.
 type Client struct {
 	URL       string
 	Key       string
@@ -26,7 +27,7 @@ type Client struct {
 // defaultHTTPTimeout is the default http.Client timeout.
 const defaultHTTPTimeout = 10 * time.Second
 
-// NewClient creates a new API client.
+// NewClient creates a new API Client.
 func NewClient(url, key string) *Client {
 	httpClient := &http.Client{Timeout: defaultHTTPTimeout}
 	return &Client{

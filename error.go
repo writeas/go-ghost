@@ -1,5 +1,6 @@
 package ghost
 
+// Error represents an error returned from the Ghost API.
 type Error struct {
 	ID      *string `json:"id"`
 	Message *string `json:"message"`

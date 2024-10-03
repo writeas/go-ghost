@@ -5,6 +5,7 @@ import (
 )
 
 type (
+	// Post represents a post on Ghost.
 	Post struct {
 		ID                 *string   `json:"id"`
 		UUID               *string   `json:"uuid"`
@@ -34,6 +35,7 @@ type (
 		Excerpt            *string   `json:"excerpt"`
 	}
 
+	// PostParams are used for content publishing requests made to the Admin API.
 	PostParams struct {
 		Title     *string `json:"title"`
 		HTML      *string `json:"html,omitempty"`

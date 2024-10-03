@@ -1,5 +1,6 @@
 package ghost
 
+// Author represents an author on Ghost.
 type Author struct {
 	ID              *string `json:"id"`
 	Name            *string `json:"name"`
